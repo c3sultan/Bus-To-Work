@@ -18,6 +18,61 @@ label{display:block;font-weight:700;font-size:14px;margin:18px 0 7px}input{width
 button{width:100%;border:0;border-radius:16px;padding:15px 18px;font:inherit;font-weight:800;font-size:17px;cursor:pointer}.primary{margin-top:20px;background:#0b2d55;color:#fff}.primary:disabled{opacity:.65;cursor:wait}
 .result{display:none;margin-top:18px;border-radius:20px;background:#f5f8fb;padding:18px}.result.show{display:block}.result-title{font-size:12px;letter-spacing:.12em;font-weight:900;color:#667085;margin-bottom:12px}.route-row{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;padding:7px 0}.route-icon{font-size:25px;text-align:center}.route-time{font-weight:900;font-size:25px;line-height:1.1}.route-place{color:#667085;font-size:13px;margin-top:3px}.buffer{border-top:1px solid #dbe4ee;margin-top:11px;padding-top:13px;font-weight:800;font-size:16px}.buffer b{font-size:22px}.meta{font-size:11px;line-height:1.5;color:#667085;margin-top:12px}.meta strong{color:#475467}.error{display:none;margin-top:18px;border-radius:18px;background:#fff4f2;padding:16px;color:#912018;font-size:14px;line-height:1.45}.error.show{display:block}
 .note{font-size:12px;line-height:1.45;color:#667085;margin:18px 2px 0}.tiny{font-size:12px;text-align:center;margin-top:14px}.tiny a{color:#0b2d55}.loading-dot{display:inline-block;animation:pulse 1s infinite alternate}@keyframes pulse{to{opacity:.35}}
+.feedback-toggle{
+  margin-top:18px;
+  text-align:center;
+  font-size:12px
+}
+.feedback-toggle button{
+  width:auto;
+  background:none;
+  color:#0b2d55;
+  padding:0;
+  font-size:12px;
+  font-weight:700;
+  text-decoration:underline
+}
+.feedback{
+  display:none;
+  margin-top:16px;
+  padding:18px;
+  border-radius:20px;
+  background:#f5f8fb
+}
+.feedback.show{display:block}
+.feedback h2{
+  margin:0 0 4px;
+  font-size:18px
+}
+.feedback p{
+  margin:0 0 12px;
+  color:#667085;
+  font-size:12px;
+  line-height:1.4
+}
+.feedback textarea{
+  width:100%;
+  min-height:110px;
+  resize:vertical;
+  font:inherit;
+  border:1px solid #cbd5e1;
+  border-radius:14px;
+  padding:14px;
+  background:#fff
+}
+.feedback .send{
+  margin-top:16px;
+  background:#0b2d55;
+  color:#fff
+}
+.feedback-success{
+  display:none;
+  margin-top:12px;
+  font-size:13px;
+  font-weight:700;
+  color:#166534
+}
+.feedback-success.show{display:block}
 </style>
 </head>
 <body>
@@ -38,6 +93,37 @@ button{width:100%;border:0;border-radius:16px;padding:15px 18px;font:inherit;fon
 
   <p class="note">Your rule: choose the <b>second-latest scheduled Route 5 arrival at Love Field Airport before check-in</b>, then show its departure from Inwood/Love Field Station.</p>
   <p class="tiny"><a href="https://www.dart.org/guide/transit-and-use/bus-routes/bus-route-detail/bus-route-55-love-link" target="_blank" rel="noopener">Official DART Route 5 schedule</a></p>
+  <div class="feedback-toggle">
+  <button type="button" id="feedbackToggle">💬 Feedback / report a problem</button>
+</div>
+
+<section class="feedback" id="feedbackSection">
+  <h2>Send feedback</h2>
+  <p>Found a problem or have an idea for Bus to Work? Send it here.</p>
+
+  <form name="feedback" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" id="feedbackForm">
+    <input type="hidden" name="form-name" value="feedback">
+
+    <p hidden>
+      <label>
+        Don't fill this out:
+        <input name="bot-field">
+      </label>
+    </p>
+
+    <label for="feedbackName">Name (optional)</label>
+    <input id="feedbackName" name="name" type="text">
+
+    <label for="feedbackEmail">Email (optional)</label>
+    <input id="feedbackEmail" name="email" type="email">
+
+    <label for="feedbackMessage">Feedback / problem</label>
+    <textarea id="feedbackMessage" name="message" required></textarea>
+
+    <button class="send" type="submit">Send feedback</button>
+    <div class="feedback-success" id="feedbackSuccess">Thanks! Your feedback was sent.</div>
+  </form>
+</section>
 </main>
 <script>
 const dateEl=document.querySelector('#date'), timeEl=document.querySelector('#time'), findBtn=document.querySelector('#find');
@@ -65,6 +151,35 @@ async function findBus(){
   finally{findBtn.disabled=false;findBtn.textContent='Find my bus'}
 }
 findBtn.addEventListener('click',findBus);
+const feedbackToggle=document.querySelector('#feedbackToggle');
+const feedbackSection=document.querySelector('#feedbackSection');
+const feedbackForm=document.querySelector('#feedbackForm');
+const feedbackSuccess=document.querySelector('#feedbackSuccess');
+
+feedbackToggle.addEventListener('click',()=>{
+  feedbackSection.classList.toggle('show');
+});
+
+feedbackForm.addEventListener('submit',async(e)=>{
+  e.preventDefault();
+
+  const formData=new FormData(feedbackForm);
+
+  try{
+    const res=await fetch('/',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:new URLSearchParams(formData).toString()
+    });
+
+    if(!res.ok)throw new Error();
+
+    feedbackForm.reset();
+    feedbackSuccess.classList.add('show');
+  }catch{
+    alert('Sorry, your feedback could not be sent. Please try again.');
+  }
+});
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('/sw.js'));
 </script>
 </body>
