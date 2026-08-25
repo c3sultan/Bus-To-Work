@@ -8,21 +8,243 @@
 <link rel="icon" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <title>Bus to Work</title>
+
 <style>
-:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#14213d;background:#eef3f8}
-*{box-sizing:border-box} body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px}
-.card{width:min(100%,430px);background:#fff;border-radius:28px;padding:24px;box-shadow:0 18px 60px rgba(20,33,61,.15)}
-.brand{display:flex;gap:14px;align-items:center;margin-bottom:18px}.badge{width:54px;height:54px;border-radius:16px;background:#0b2d55;color:white;display:grid;place-items:center;font-size:28px}
-h1{font-size:27px;margin:0}.sub{margin:3px 0 0;color:#667085;font-size:14px}
-label{display:block;font-weight:700;font-size:14px;margin:18px 0 7px}input{width:100%;font:inherit;font-size:18px;border:1px solid #cbd5e1;border-radius:14px;padding:14px;background:#fff}
-button{width:100%;border:0;border-radius:16px;padding:15px 18px;font:inherit;font-weight:800;font-size:17px;cursor:pointer}.primary{margin-top:20px;background:#0b2d55;color:#fff}.primary:disabled{opacity:.65;cursor:wait}
-.result{display:none;margin-top:18px;border-radius:20px;background:#f5f8fb;padding:18px}.result.show{display:block}.result-title{font-size:12px;letter-spacing:.12em;font-weight:900;color:#667085;margin-bottom:12px}.route-row{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;padding:7px 0}.route-icon{font-size:25px;text-align:center}.route-time{font-weight:900;font-size:25px;line-height:1.1}.route-place{color:#667085;font-size:13px;margin-top:3px}.buffer{border-top:1px solid #dbe4ee;margin-top:11px;padding-top:13px;font-weight:800;font-size:16px}.buffer b{font-size:22px}.meta{font-size:11px;line-height:1.5;color:#667085;margin-top:12px}.meta strong{color:#475467}.error{display:none;margin-top:18px;border-radius:18px;background:#fff4f2;padding:16px;color:#912018;font-size:14px;line-height:1.45}.error.show{display:block}
-.note{font-size:12px;line-height:1.45;color:#667085;margin:18px 2px 0}.tiny{font-size:12px;text-align:center;margin-top:14px}.tiny a{color:#0b2d55}.loading-dot{display:inline-block;animation:pulse 1s infinite alternate}@keyframes pulse{to{opacity:.35}}
+:root{
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#14213d;
+  background:#eef3f8
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:22px
+}
+
+.card{
+  width:min(100%,430px);
+  background:#fff;
+  border-radius:28px;
+  padding:24px;
+  box-shadow:0 18px 60px rgba(20,33,61,.15)
+}
+
+.brand{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  margin-bottom:18px
+}
+
+.badge{
+  width:54px;
+  height:54px;
+  border-radius:16px;
+  background:#0b2d55;
+  color:white;
+  display:grid;
+  place-items:center;
+  font-size:28px
+}
+
+h1{
+  font-size:27px;
+  margin:0
+}
+
+.sub{
+  margin:3px 0 0;
+  color:#667085;
+  font-size:14px
+}
+
+label{
+  display:block;
+  font-weight:700;
+  font-size:14px;
+  margin:18px 0 7px
+}
+
+input{
+  width:100%;
+  font:inherit;
+  font-size:18px;
+  border:1px solid #cbd5e1;
+  border-radius:14px;
+  padding:14px;
+  background:#fff
+}
+
+button{
+  width:100%;
+  border:0;
+  border-radius:16px;
+  padding:15px 18px;
+  font:inherit;
+  font-weight:800;
+  font-size:17px;
+  cursor:pointer
+}
+
+.primary{
+  margin-top:20px;
+  background:#0b2d55;
+  color:#fff
+}
+
+.primary:disabled{
+  opacity:.65;
+  cursor:wait
+}
+
+.result{
+  display:none;
+  margin-top:18px;
+  border-radius:20px;
+  background:#f5f8fb;
+  padding:18px
+}
+
+.result.show{
+  display:block
+}
+
+.result-title{
+  font-size:12px;
+  letter-spacing:.12em;
+  font-weight:900;
+  color:#667085;
+  margin-bottom:12px
+}
+
+.route-row{
+  display:grid;
+  grid-template-columns:42px 1fr;
+  gap:12px;
+  align-items:start;
+  padding:7px 0
+}
+
+.route-icon{
+  font-size:25px;
+  text-align:center
+}
+
+.route-time{
+  font-weight:900;
+  font-size:25px;
+  line-height:1.1
+}
+
+.route-place{
+  color:#667085;
+  font-size:13px;
+  margin-top:3px
+}
+
+.buffer{
+  border-top:1px solid #dbe4ee;
+  margin-top:11px;
+  padding-top:13px;
+  font-weight:800;
+  font-size:16px
+}
+
+.buffer b{
+  font-size:22px
+}
+
+.alarm-box{
+  display:none;
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid #dbe4ee
+}
+
+.alarm-box.show{
+  display:block
+}
+
+.alarm-time{
+  font-weight:900;
+  font-size:20px;
+  margin-bottom:9px
+}
+
+.alarm-note{
+  color:#667085;
+  font-size:12px;
+  margin-bottom:10px
+}
+
+.alarm-btn{
+  background:#0b2d55;
+  color:#fff
+}
+
+.meta{
+  font-size:11px;
+  line-height:1.5;
+  color:#667085;
+  margin-top:12px
+}
+
+.meta strong{
+  color:#475467
+}
+
+.error{
+  display:none;
+  margin-top:18px;
+  border-radius:18px;
+  background:#fff4f2;
+  padding:16px;
+  color:#912018;
+  font-size:14px;
+  line-height:1.45
+}
+
+.error.show{
+  display:block
+}
+
+.note{
+  font-size:12px;
+  line-height:1.45;
+  color:#667085;
+  margin:18px 2px 0
+}
+
+.tiny{
+  font-size:12px;
+  text-align:center;
+  margin-top:14px
+}
+
+.tiny a{
+  color:#0b2d55
+}
+
+.loading-dot{
+  display:inline-block;
+  animation:pulse 1s infinite alternate
+}
+
+@keyframes pulse{
+  to{opacity:.35}
+}
+
 .feedback-toggle{
   margin-top:18px;
   text-align:center;
   font-size:12px
 }
+
 .feedback-toggle button{
   width:auto;
   background:none;
@@ -32,6 +254,7 @@ button{width:100%;border:0;border-radius:16px;padding:15px 18px;font:inherit;fon
   font-weight:700;
   text-decoration:underline
 }
+
 .feedback{
   display:none;
   margin-top:16px;
@@ -39,17 +262,23 @@ button{width:100%;border:0;border-radius:16px;padding:15px 18px;font:inherit;fon
   border-radius:20px;
   background:#f5f8fb
 }
-.feedback.show{display:block}
+
+.feedback.show{
+  display:block
+}
+
 .feedback h2{
   margin:0 0 4px;
   font-size:18px
 }
+
 .feedback p{
   margin:0 0 12px;
   color:#667085;
   font-size:12px;
   line-height:1.4
 }
+
 .feedback textarea{
   width:100%;
   min-height:110px;
@@ -60,11 +289,13 @@ button{width:100%;border:0;border-radius:16px;padding:15px 18px;font:inherit;fon
   padding:14px;
   background:#fff
 }
+
 .feedback .send{
   margin-top:16px;
   background:#0b2d55;
   color:#fff
 }
+
 .feedback-success{
   display:none;
   margin-top:12px;
@@ -72,115 +303,651 @@ button{width:100%;border:0;border-radius:16px;padding:15px 18px;font:inherit;fon
   font-weight:700;
   color:#166534
 }
-.feedback-success.show{display:block}
+
+.feedback-success.show{
+  display:block
+}
 </style>
 </head>
+
 <body>
+
 <main class="card">
-  <div class="brand"><div class="badge">🚌</div><div><h1>Bus to Work</h1><p class="sub">Inwood Station → Love Field </br> via DART Route 5 <i>Love Link</i></p></div></div>
-  <label for="date">Work date</label><input id="date" type="date">
-  <label for="time">Check-in time</label><input id="time" type="time" value="06:00">
-  <button class="primary" id="find">Find my bus</button>
+
+  <div class="brand">
+    <div class="badge">🚌</div>
+
+    <div>
+      <h1>Bus to Work</h1>
+      <p class="sub">
+        Inwood Station → Love Field<br>
+        via DART Route 5 <i>Love Link</i>
+      </p>
+    </div>
+  </div>
+
+  <label for="date">Work date</label>
+  <input id="date" type="date">
+
+  <label for="time">Check-in time</label>
+  <input id="time" type="time" value="06:00">
+
+  <button class="primary" id="find">
+    Find my bus
+  </button>
 
   <section class="result" id="result" aria-live="polite">
-    <div class="result-title">YOUR BUS</div>
-    <div class="route-row"><div class="route-icon">🚌</div><div><div class="route-time" id="depart"></div><div class="route-place">Inwood/Love Field Station</div></div></div>
-    <div class="route-row"><div class="route-icon">✈️</div><div><div class="route-time" id="arrive"></div><div class="route-place">Love Field Airport (Baggage Claim)</div></div></div>
-    <div class="buffer"><b id="buffer"></b> before your <span id="checkin"></span> check-in</div>
+
+    <div class="result-title">
+      YOUR BUS
+    </div>
+
+    <div class="route-row">
+      <div class="route-icon">🚌</div>
+
+      <div>
+        <div class="route-time" id="depart"></div>
+        <div class="route-place">
+          Inwood/Love Field Station
+        </div>
+      </div>
+    </div>
+
+    <div class="route-row">
+      <div class="route-icon">✈️</div>
+
+      <div>
+        <div class="route-time" id="arrive"></div>
+        <div class="route-place">
+          Love Field Airport (Baggage Claim)
+        </div>
+      </div>
+    </div>
+
+    <div class="buffer">
+      <b id="buffer"></b>
+      before your
+      <span id="checkin"></span>
+      check-in
+    </div>
+
+    <div class="alarm-box" id="alarmBox">
+
+      <div class="alarm-time">
+        ⏰ Wake-up:
+        <span id="alarmTime"></span>
+      </div>
+
+      <div class="alarm-note">
+        Based on 2 hours to get ready before leaving for the bus.
+      </div>
+
+      <button
+        class="alarm-btn"
+        id="setAlarm"
+        type="button">
+        Set alarm
+      </button>
+
+    </div>
+
     <div class="meta" id="meta"></div>
+
   </section>
-  <section class="error" id="error" aria-live="polite"></section>
 
-  <p class="note">Finds the <b>second-to-latest scheduled Route 5 arrival at Love Field Airport before check-in</b>, then shows its departure from Inwood Station.</p>
-  <p class="tiny"><a href="https://www.dart.org/guide/transit-and-use/bus-routes/bus-route-detail/bus-route-55-love-link" target="_blank" rel="noopener">Official DART Route 5 schedule</a></p>
+  <section
+    class="error"
+    id="error"
+    aria-live="polite">
+  </section>
+
+  <p class="note">
+    Finds the
+    <b>second-to-latest scheduled Route 5 arrival at Love Field Airport before check-in</b>,
+    then shows its departure from Inwood Station.
+  </p>
+
+  <p class="tiny">
+    <a
+      href="https://www.dart.org/guide/transit-and-use/bus-routes/bus-route-detail/bus-route-55-love-link"
+      target="_blank"
+      rel="noopener">
+      Official DART Route 5 schedule
+    </a>
+  </p>
+
   <div class="feedback-toggle">
-  <button type="button" id="feedbackToggle">💬 Feedback / report a problem</button>
-</div>
+    <button
+      type="button"
+      id="feedbackToggle">
+      💬 Feedback / report a problem
+    </button>
+  </div>
 
-<section class="feedback" id="feedbackSection">
-  <h2>Send feedback</h2>
-  <p>Found a problem or have an idea for Bus to Work? Send it here.</p>
+  <section
+    class="feedback"
+    id="feedbackSection">
 
-  <form name="feedback" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" id="feedbackForm">
-    <input type="hidden" name="form-name" value="feedback">
+    <h2>
+      Send feedback
+    </h2>
 
-    <p hidden>
-      <label>
-        Don't fill this out:
-        <input name="bot-field">
-      </label>
+    <p>
+      Found a problem or have an idea for Bus to Work?
+      Send it here.
     </p>
 
-    <label for="feedbackName">Name (optional)</label>
-    <input id="feedbackName" name="name" type="text">
+    <form
+      name="feedback"
+      method="POST"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      id="feedbackForm">
 
-    <label for="feedbackEmail">Email (optional)</label>
-    <input id="feedbackEmail" name="email" type="email">
+      <input
+        type="hidden"
+        name="form-name"
+        value="feedback">
 
-    <label for="feedbackMessage">Feedback / problem</label>
-    <textarea id="feedbackMessage" name="message" required></textarea>
+      <p hidden>
+        <label>
+          Don't fill this out:
+          <input name="bot-field">
+        </label>
+      </p>
 
-    <button class="send" type="submit">Send feedback</button>
-    <div class="feedback-success" id="feedbackSuccess">Thanks! Your feedback was sent.</div>
-  </form>
-</section>
+      <label for="feedbackName">
+        Name (optional)
+      </label>
+
+      <input
+        id="feedbackName"
+        name="name"
+        type="text">
+
+      <label for="feedbackEmail">
+        Email (optional)
+      </label>
+
+      <input
+        id="feedbackEmail"
+        name="email"
+        type="email">
+
+      <label for="feedbackMessage">
+        Feedback / problem
+      </label>
+
+      <textarea
+        id="feedbackMessage"
+        name="message"
+        required>
+      </textarea>
+
+      <button
+        class="send"
+        type="submit">
+        Send feedback
+      </button>
+
+      <div
+        class="feedback-success"
+        id="feedbackSuccess">
+        Thanks! Your feedback was sent.
+      </div>
+
+    </form>
+
+  </section>
+
 </main>
+
 <script>
-const dateEl=document.querySelector('#date'), timeEl=document.querySelector('#time'), findBtn=document.querySelector('#find');
-const result=document.querySelector('#result'), errorBox=document.querySelector('#error');
-function localISODate(add=0){const x=new Date();x.setDate(x.getDate()+add);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`}
-dateEl.value=localISODate(1); timeEl.value='06:00';
-function fmtTime(v){const [h,m]=v.split(':').map(Number);return `${((h+11)%12)+1}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`}
-function fmtDate(v){const [y,m,d]=v.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}
-async function findBus(){
-  if(!dateEl.value||!timeEl.value)return;
-  findBtn.disabled=true; findBtn.innerHTML='Checking DART schedule <span class="loading-dot">…</span>'; result.classList.remove('show'); errorBox.classList.remove('show');
-  try{
-    const q=new URLSearchParams({date:dateEl.value,checkin:timeEl.value});
-    const res=await fetch(`/.netlify/functions/find-bus?${q}`);
-    const data=await res.json();
-    if(!res.ok)throw new Error(data.error||'Unable to find a qualifying bus.');
-    document.querySelector('#depart').textContent=fmtTime(data.departure);
-    document.querySelector('#arrive').textContent=fmtTime(data.arrival);
-    document.querySelector('#buffer').textContent=`${data.bufferMinutes} min`;
-    document.querySelector('#checkin').textContent=fmtTime(timeEl.value);
-    const range=data.feedStart&&data.feedEnd?`DART schedule effective ${fmtDate(data.feedStart)} – ${fmtDate(data.feedEnd)}`:'Current DART GTFS schedule';
-    document.querySelector('#meta').innerHTML=`<strong>${range}</strong><br>${data.serviceLabel} • Scheduled times; DART recommends arriving at the stop 5 minutes early.`;
-    result.classList.add('show');
-  }catch(err){errorBox.textContent=err.message;errorBox.classList.add('show')}
-  finally{findBtn.disabled=false;findBtn.textContent='Find my bus'}
+
+const dateEl =
+  document.querySelector('#date');
+
+const timeEl =
+  document.querySelector('#time');
+
+const findBtn =
+  document.querySelector('#find');
+
+const result =
+  document.querySelector('#result');
+
+const errorBox =
+  document.querySelector('#error');
+
+const alarmBox =
+  document.querySelector('#alarmBox');
+
+const alarmTimeEl =
+  document.querySelector('#alarmTime');
+
+const setAlarmBtn =
+  document.querySelector('#setAlarm');
+
+let alarmHour = 0;
+let alarmMinute = 0;
+
+
+/* ---------------------------------------
+   DEFAULT DATE = LOCAL DATE + 1 DAY
+--------------------------------------- */
+
+function localISODate(add=0){
+
+  const x = new Date();
+
+  x.setHours(12,0,0,0);
+
+  x.setDate(
+    x.getDate() + add
+  );
+
+  return (
+    `${x.getFullYear()}-` +
+    `${String(x.getMonth()+1).padStart(2,'0')}-` +
+    `${String(x.getDate()).padStart(2,'0')}`
+  );
 }
-findBtn.addEventListener('click',findBus);
-const feedbackToggle=document.querySelector('#feedbackToggle');
-const feedbackSection=document.querySelector('#feedbackSection');
-const feedbackForm=document.querySelector('#feedbackForm');
-const feedbackSuccess=document.querySelector('#feedbackSuccess');
 
-feedbackToggle.addEventListener('click',()=>{
-  feedbackSection.classList.toggle('show');
-});
+dateEl.value =
+  localISODate(1);
 
-feedbackForm.addEventListener('submit',async(e)=>{
-  e.preventDefault();
+timeEl.value =
+  '06:00';
 
-  const formData=new FormData(feedbackForm);
+
+/* ---------------------------------------
+   TIME FORMATTING
+--------------------------------------- */
+
+function fmtTime(v){
+
+  const [h,m] =
+    v.split(':').map(Number);
+
+  return (
+    `${((h+11)%12)+1}:` +
+    `${String(m).padStart(2,'0')} ` +
+    `${h>=12?'PM':'AM'}`
+  );
+}
+
+
+function fmtDate(v){
+
+  const [y,m,d] =
+    v.split('-').map(Number);
+
+  return new Date(
+    y,
+    m-1,
+    d
+  ).toLocaleDateString(
+    undefined,
+    {
+      month:'short',
+      day:'numeric',
+      year:'numeric'
+    }
+  );
+}
+
+
+/* ---------------------------------------
+   WAKE-UP TIME
+--------------------------------------- */
+
+function calculateWakeTime(departure){
+
+  const [h,m] =
+    departure
+      .split(':')
+      .map(Number);
+
+  const d =
+    new Date();
+
+  d.setHours(
+    h,
+    m,
+    0,
+    0
+  );
+
+  d.setHours(
+    d.getHours() - 2
+  );
+
+  alarmHour =
+    d.getHours();
+
+  alarmMinute =
+    d.getMinutes();
+
+  return (
+    `${String(alarmHour).padStart(2,'0')}:` +
+    `${String(alarmMinute).padStart(2,'0')}`
+  );
+}
+
+
+/* ---------------------------------------
+   FIND BUS
+--------------------------------------- */
+
+async function findBus(){
+
+  if(
+    !dateEl.value ||
+    !timeEl.value
+  ){
+    return;
+  }
+
+  findBtn.disabled =
+    true;
+
+  findBtn.innerHTML =
+    'Checking DART schedule <span class="loading-dot">…</span>';
+
+  result.classList.remove(
+    'show'
+  );
+
+  alarmBox.classList.remove(
+    'show'
+  );
+
+  errorBox.classList.remove(
+    'show'
+  );
 
   try{
-    const res=await fetch('/',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams(formData).toString()
-    });
 
-    if(!res.ok)throw new Error();
+    const q =
+      new URLSearchParams({
+        date:dateEl.value,
+        checkin:timeEl.value
+      });
 
-    feedbackForm.reset();
-    feedbackSuccess.classList.add('show');
-  }catch{
-    alert('Sorry, your feedback could not be sent. Please try again.');
+    const res =
+      await fetch(
+        `/.netlify/functions/find-bus?${q}`
+      );
+
+    const data =
+      await res.json();
+
+    if(!res.ok){
+
+      throw new Error(
+        data.error ||
+        'Unable to find a qualifying bus.'
+      );
+
+    }
+
+
+    document
+      .querySelector('#depart')
+      .textContent =
+      fmtTime(
+        data.departure
+      );
+
+
+    document
+      .querySelector('#arrive')
+      .textContent =
+      fmtTime(
+        data.arrival
+      );
+
+
+    document
+      .querySelector('#buffer')
+      .textContent =
+      `${data.bufferMinutes} min`;
+
+
+    document
+      .querySelector('#checkin')
+      .textContent =
+      fmtTime(
+        timeEl.value
+      );
+
+
+    /* Wake-up alarm */
+
+    const wakeTime =
+      calculateWakeTime(
+        data.departure
+      );
+
+    alarmTimeEl.textContent =
+      fmtTime(
+        wakeTime
+      );
+
+    setAlarmBtn.textContent =
+      `Set ${fmtTime(wakeTime)} alarm`;
+
+    alarmBox.classList.add(
+      'show'
+    );
+
+
+    /* Schedule metadata */
+
+    const range =
+      data.feedStart &&
+      data.feedEnd
+
+      ? `DART schedule effective ${fmtDate(data.feedStart)} – ${fmtDate(data.feedEnd)}`
+
+      : 'Current DART GTFS schedule';
+
+
+    document
+      .querySelector('#meta')
+      .innerHTML =
+      `<strong>${range}</strong><br>` +
+      `${data.serviceLabel} • ` +
+      `Scheduled times; DART recommends arriving at the stop 5 minutes early.`;
+
+
+    result.classList.add(
+      'show'
+    );
+
   }
-});
-if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('/sw.js'));
+
+  catch(err){
+
+    errorBox.textContent =
+      err.message;
+
+    errorBox.classList.add(
+      'show'
+    );
+
+  }
+
+  finally{
+
+    findBtn.disabled =
+      false;
+
+    findBtn.textContent =
+      'Find my bus';
+
+  }
+
+}
+
+
+findBtn.addEventListener(
+  'click',
+  findBus
+);
+
+
+/* ---------------------------------------
+   ANDROID ALARM
+--------------------------------------- */
+
+setAlarmBtn.addEventListener(
+  'click',
+  ()=>{
+
+    const label =
+      'Bus to Work';
+
+    const intent =
+      `intent:#Intent;` +
+      `action=android.intent.action.SET_ALARM;` +
+      `i.android.intent.extra.alarm.HOUR=${alarmHour};` +
+      `i.android.intent.extra.alarm.MINUTES=${alarmMinute};` +
+      `S.android.intent.extra.alarm.MESSAGE=${encodeURIComponent(label)};` +
+      `end`;
+
+    window.location.href =
+      intent;
+
+  }
+);
+
+
+/* ---------------------------------------
+   FEEDBACK
+--------------------------------------- */
+
+const feedbackToggle =
+  document.querySelector(
+    '#feedbackToggle'
+  );
+
+const feedbackSection =
+  document.querySelector(
+    '#feedbackSection'
+  );
+
+const feedbackForm =
+  document.querySelector(
+    '#feedbackForm'
+  );
+
+const feedbackSuccess =
+  document.querySelector(
+    '#feedbackSuccess'
+  );
+
+
+feedbackToggle.addEventListener(
+  'click',
+  ()=>{
+
+    feedbackSection
+      .classList
+      .toggle(
+        'show'
+      );
+
+  }
+);
+
+
+feedbackForm.addEventListener(
+  'submit',
+  async(e)=>{
+
+    e.preventDefault();
+
+    feedbackSuccess
+      .classList
+      .remove(
+        'show'
+      );
+
+    const formData =
+      new FormData(
+        feedbackForm
+      );
+
+    try{
+
+      const res =
+        await fetch(
+          '/',
+          {
+            method:'POST',
+            headers:{
+              'Content-Type':
+              'application/x-www-form-urlencoded'
+            },
+            body:
+              new URLSearchParams(
+                formData
+              ).toString()
+          }
+        );
+
+
+      if(!res.ok){
+        throw new Error();
+      }
+
+
+      feedbackForm.reset();
+
+      feedbackSuccess
+        .classList
+        .add(
+          'show'
+        );
+
+    }
+
+    catch{
+
+      alert(
+        'Sorry, your feedback could not be sent. Please try again.'
+      );
+
+    }
+
+  }
+);
+
+
+/* ---------------------------------------
+   PWA SERVICE WORKER
+--------------------------------------- */
+
+if(
+  'serviceWorker'
+  in navigator
+){
+
+  addEventListener(
+    'load',
+    ()=>{
+      navigator
+        .serviceWorker
+        .register(
+          '/sw.js'
+        );
+    }
+  );
+
+}
+
 </script>
+
 </body>
 </html>
