@@ -4,9 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b2d55">
+
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/icon-192.png">
+
 <title>Bus to Work</title>
 
 <style>
@@ -159,6 +161,8 @@ button{
   font-size:22px
 }
 
+/* Alarm section */
+
 .alarm-box{
   display:none;
   margin-top:14px;
@@ -173,18 +177,32 @@ button{
 .alarm-time{
   font-weight:900;
   font-size:20px;
-  margin-bottom:9px
+  margin-bottom:5px
 }
 
 .alarm-note{
   color:#667085;
   font-size:12px;
-  margin-bottom:10px
+  line-height:1.4;
+  margin-bottom:11px
 }
 
 .alarm-btn{
   background:#0b2d55;
   color:#fff
+}
+
+.alarm-status{
+  display:none;
+  margin-top:9px;
+  font-size:12px;
+  line-height:1.4;
+  color:#166534;
+  font-weight:700
+}
+
+.alarm-status.show{
+  display:block
 }
 
 .meta{
@@ -238,6 +256,8 @@ button{
 @keyframes pulse{
   to{opacity:.35}
 }
+
+/* Feedback */
 
 .feedback-toggle{
   margin-top:18px;
@@ -338,9 +358,7 @@ button{
 
   <section class="result" id="result" aria-live="polite">
 
-    <div class="result-title">
-      YOUR BUS
-    </div>
+    <div class="result-title">YOUR BUS</div>
 
     <div class="route-row">
       <div class="route-icon">🚌</div>
@@ -379,15 +397,20 @@ button{
       </div>
 
       <div class="alarm-note">
-        Based on 2 hours to get ready before leaving for the bus.
+        Allows 2 hours to get ready before your bus departure.
       </div>
 
       <button
         class="alarm-btn"
         id="setAlarm"
         type="button">
-        Set alarm
+        Copy alarm time &amp; open Clock
       </button>
+
+      <div
+        class="alarm-status"
+        id="alarmStatus">
+      </div>
 
     </div>
 
@@ -428,9 +451,7 @@ button{
     class="feedback"
     id="feedbackSection">
 
-    <h2>
-      Send feedback
-    </h2>
+    <h2>Send feedback</h2>
 
     <p>
       Found a problem or have an idea for Bus to Work?
@@ -528,8 +549,12 @@ const alarmTimeEl =
 const setAlarmBtn =
   document.querySelector('#setAlarm');
 
+const alarmStatus =
+  document.querySelector('#alarmStatus');
+
 let alarmHour = 0;
 let alarmMinute = 0;
+let wakeTimeFormatted = '';
 
 
 /* ---------------------------------------
@@ -540,6 +565,7 @@ function localISODate(add=0){
 
   const x = new Date();
 
+  /* Using local noon helps avoid DST/date-boundary issues */
   x.setHours(12,0,0,0);
 
   x.setDate(
@@ -662,6 +688,10 @@ async function findBus(){
     'show'
   );
 
+  alarmStatus.classList.remove(
+    'show'
+  );
+
   errorBox.classList.remove(
     'show'
   );
@@ -691,14 +721,12 @@ async function findBus(){
 
     }
 
-
     document
       .querySelector('#depart')
       .textContent =
       fmtTime(
         data.departure
       );
-
 
     document
       .querySelector('#arrive')
@@ -707,12 +735,10 @@ async function findBus(){
         data.arrival
       );
 
-
     document
       .querySelector('#buffer')
       .textContent =
       `${data.bufferMinutes} min`;
-
 
     document
       .querySelector('#checkin')
@@ -722,20 +748,23 @@ async function findBus(){
       );
 
 
-    /* Wake-up alarm */
+    /* Wake-up time */
 
     const wakeTime =
       calculateWakeTime(
         data.departure
       );
 
-    alarmTimeEl.textContent =
+    wakeTimeFormatted =
       fmtTime(
         wakeTime
       );
 
+    alarmTimeEl.textContent =
+      wakeTimeFormatted;
+
     setAlarmBtn.textContent =
-      `Set ${fmtTime(wakeTime)} alarm`;
+      `Copy ${wakeTimeFormatted} & open Clock`;
 
     alarmBox.classList.add(
       'show'
@@ -752,14 +781,12 @@ async function findBus(){
 
       : 'Current DART GTFS schedule';
 
-
     document
       .querySelector('#meta')
       .innerHTML =
       `<strong>${range}</strong><br>` +
       `${data.serviceLabel} • ` +
       `Scheduled times; DART recommends arriving at the stop 5 minutes early.`;
-
 
     result.classList.add(
       'show'
@@ -798,26 +825,138 @@ findBtn.addEventListener(
 
 
 /* ---------------------------------------
-   ANDROID ALARM
+   COPY WAKE-UP TIME + TRY TO OPEN CLOCK
 --------------------------------------- */
+
+async function copyAlarmTime(){
+
+  const text =
+    wakeTimeFormatted;
+
+  try{
+
+    if(
+      navigator.clipboard &&
+      window.isSecureContext
+    ){
+
+      await navigator.clipboard.writeText(
+        text
+      );
+
+      return true;
+
+    }
+
+  }catch(err){
+    /* Continue to fallback */
+  }
+
+  /*
+    Clipboard fallback for browsers where
+    navigator.clipboard is unavailable.
+  */
+
+  const temp =
+    document.createElement(
+      'textarea'
+    );
+
+  temp.value =
+    text;
+
+  temp.setAttribute(
+    'readonly',
+    ''
+  );
+
+  temp.style.position =
+    'fixed';
+
+  temp.style.opacity =
+    '0';
+
+  document.body.appendChild(
+    temp
+  );
+
+  temp.select();
+
+  let copied =
+    false;
+
+  try{
+
+    copied =
+      document.execCommand(
+        'copy'
+      );
+
+  }catch(err){
+
+    copied =
+      false;
+
+  }
+
+  document.body.removeChild(
+    temp
+  );
+
+  return copied;
+}
+
 
 setAlarmBtn.addEventListener(
   'click',
-  ()=>{
+  async()=>{
 
-    const label =
-      'Bus to Work';
+    const copied =
+      await copyAlarmTime();
+
+    if(copied){
+
+      alarmStatus.textContent =
+        `${wakeTimeFormatted} copied. If Clock doesn't open automatically, open the Clock app and set an alarm for this time.`;
+
+    }else{
+
+      alarmStatus.textContent =
+        `Set your alarm for ${wakeTimeFormatted}. If Clock doesn't open automatically, open the Clock app manually.`;
+
+    }
+
+    alarmStatus.classList.add(
+      'show'
+    );
+
+
+    /*
+      Ask Android to open the Alarms screen.
+
+      Chrome/PWAs do not guarantee that this intent
+      will launch, so copying the time above is the
+      reliable fallback.
+    */
 
     const intent =
-      `intent:#Intent;` +
-      `action=android.intent.action.SET_ALARM;` +
-      `i.android.intent.extra.alarm.HOUR=${alarmHour};` +
-      `i.android.intent.extra.alarm.MINUTES=${alarmMinute};` +
-      `S.android.intent.extra.alarm.MESSAGE=${encodeURIComponent(label)};` +
-      `end`;
+      'intent:#Intent;' +
+      'action=android.intent.action.SHOW_ALARMS;' +
+      'end';
 
-    window.location.href =
-      intent;
+    try{
+
+      window.location.href =
+        intent;
+
+    }catch(err){
+
+      /*
+        Nothing else needed here.
+        The wake-up time has already been copied.
+      */
+
+    }
 
   }
 );
@@ -886,10 +1025,12 @@ feedbackForm.addEventListener(
           '/',
           {
             method:'POST',
+
             headers:{
               'Content-Type':
               'application/x-www-form-urlencoded'
             },
+
             body:
               new URLSearchParams(
                 formData
@@ -897,11 +1038,9 @@ feedbackForm.addEventListener(
           }
         );
 
-
       if(!res.ok){
         throw new Error();
       }
-
 
       feedbackForm.reset();
 
@@ -937,11 +1076,13 @@ if(
   addEventListener(
     'load',
     ()=>{
+
       navigator
         .serviceWorker
         .register(
           '/sw.js'
         );
+
     }
   );
 
